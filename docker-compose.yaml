@@ -1,8 +1,6 @@
 services:
   soloist:
     image: ghcr.io/hypercookie/soloist_docker:latest
-    build:
-      context: .
     restart: unless-stopped
 
     env_file:
