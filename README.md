@@ -2,6 +2,8 @@
 
 Docker image for running Spotify Soloist with Docker Compose.
 
+> Note: Spotify cycles the binaries every 60 days. This repo will build a new docker image from these releases twice a month. The compose also includes a watchtower container that will automatically update the soloist container. It will due to technical limitations also update all docker containers that have `com.centurylinklabs.watchtower.enable=true` as a label.
+
 ## Configuration
 
 Create a `.env` file:
