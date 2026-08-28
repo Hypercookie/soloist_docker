@@ -1,0 +1,23 @@
+services:
+  soloist:
+    image: ghcr.io/hypercookie/soloist_docker:latest
+    build:
+      context: .
+    restart: unless-stopped
+
+    env_file:
+      - .env
+    network_mode: host
+    command:
+      - /usr/local/bin/soloist
+      - --device-name
+      - ${DEVICE_NAME}
+      - --api-key
+      - ${SOLOIST_API_KEY}
+
+    healthcheck:
+      test: [ "CMD-SHELL", "soloist ctl status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
