@@ -46,8 +46,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
+          push: true
           context: .
           file: ./Dockerfile
           platforms: ${{ matrix.platform }}
@@ -55,12 +56,28 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.tag }}
           cache-to: type=gha,mode=max,scope=${{ matrix.tag }}
 
+      - name: Get image digest
+        id: digest
+        run: |
+          DIGEST=$(docker buildx imagetools inspect \
+            "${{ env.IMAGE }}:${{ matrix.tag }}" \
+            | awk '/^Digest:/ {print $2; exit}')
+
+          if [ -z "$DIGEST" ]; then
+            echo "Could not find image digest"
+            exit 1
+          fi
+
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "Image digest: $DIGEST"
+
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
 
       - name: Sign image
         run: |
-          cosign sign --yes "${{ env.IMAGE }}:${{ matrix.tag }}"
+          cosign sign --yes \
+            "${{ env.IMAGE }}@${{ steps.digest.outputs.digest }}"
 
   manifest:
     name: Create multi-platform manifest
