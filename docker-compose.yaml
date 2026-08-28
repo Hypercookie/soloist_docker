@@ -14,10 +14,19 @@ services:
       - ${DEVICE_NAME}
       - --api-key
       - ${SOLOIST_API_KEY}
-
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
     healthcheck:
       test: [ "CMD-SHELL", "soloist ctl status" ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
+  watchtower:
+    image: 'nickfedor/watchtower:latest'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=86400
