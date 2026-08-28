@@ -12,6 +12,8 @@ services:
       - ${DEVICE_NAME}
       - --api-key
       - ${SOLOIST_API_KEY}
+      - --ws
+      - 127.0.0.1:0
     labels:
       - com.centurylinklabs.watchtower.enable=true
     healthcheck:
